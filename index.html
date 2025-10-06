@@ -1,404 +1,439 @@
 <!DOCTYPE html><html lang="en" data-scrapbook-source="https://de-bridge.github.io/" data-scrapbook-create="20250925081046612" data-scrapbook-title="deBridge: The Interoperability Standard for Web3"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aster DEX</title>
-<link rel="icon" type="image/png" href="Aster-Dex-Logo-1.jpg">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- SEO / EEAT Meta Tags -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Aster DEX — Liquidity & Safety</title>
+  <meta name="description" content="Aster DEX: deep-dive into AsterDEX architecture, Aster DEX Trading workflows, and the Aster DEX Platform. Learn routing, fees, slippage, MEV protection, LP risks/IL, KPIs, and a practical runbook."/>
+  <meta name="author" content="DeFi Execution & Security Team"/>
+  <link rel="icon" type="image/png" href="aster.png"/>
+  <link rel="canonical" href="#"/>
 
-<!-- Fonts / Icons (optional local mirrors) -->
-<style>
-  @import url("css2.css");     /* your Google Fonts mirror */
-  @import url("all.min.css");  /* your Font Awesome mirror */
-</style>
+  <!-- Open Graph -->
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" content="Aster DEX — Smart Routing, Liquidity & Safety"/>
+  <meta property="og:description" content="AsterDEX architecture, Aster DEX Trading, and the Aster DEX Platform: routing, fees, MEV, LP risks, KPIs, and a reliable runbook."/>
+  <meta property="og:image" content="cover.png"/>
+  <meta property="og:url" content="#"/>
 
-<style>
-  :root{
-    --primary-color:#79E1FF;      /* starry cyan */
-    --secondary-color:#B27CFF;    /* nebula violet */
-    --bg-dark:#0A0E18;
-    --bg-light:#131A2B;
-    --text-color:#E9ECF5;
-    --card-color:#0F1528;
-    --accent-glow:#79E1FF;
-    --muted:#B7C0D9;
-  }
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Aster DEX — Smart Routing, Liquidity & Safety"/>
+  <meta name="twitter:description" content="AsterDEX architecture, Aster DEX Trading flows, KPIs, and a reliable runbook."/>
+  <meta name="twitter:image" content="cover.png"/>
 
-  *{box-sizing:border-box}
-  body{
-    font-family:'Roboto',system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;
-    background:var(--bg-dark);
-    color:var(--text-color);
-    line-height:1.65;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    margin:0;
+  <!-- Optional structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"Aster DEX — Smart Routing, Liquidity & Safety",
+    "description":"Technical guide to AsterDEX architecture, Aster DEX Trading workflows, and the Aster DEX Platform.",
+    "publisher":{"@type":"Organization","name":"DeFi Execution & Security Team"}
   }
-  .header-bg{
-    background:
-      radial-gradient(1200px 600px at 50% -100px, rgba(121,225,255,.18), transparent 60%),
-      linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-light) 100%);
-    padding:96px 20px 80px;
-    text-align:center;
-    border-bottom:1px solid rgba(255,255,255,.06);
-  }
-  .container{max-width:1040px;margin:0 auto;padding:24px 20px}
-  h1{
-    font-size:3.25rem;margin:0 0 14px;
-    background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent
-  }
-  .tagline{max-width:880px;margin:0 auto;color:var(--muted);font-size:1.08rem}
-  section{
-    background:var(--card-color);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:16px;
-    padding:44px 24px;
-    margin:34px 0;
-    box-shadow:0 10px 40px rgba(2,8,23,.45);
-    transition:transform .25s ease, box-shadow .25s ease;
-  }
-  section:hover{transform:translateY(-4px);box-shadow:0 16px 60px rgba(2,8,23,.6)}
-  h2{
-    font-size:2.05rem;margin:0 0 24px;text-align:center;
-    color:var(--primary-color);letter-spacing:.2px
-  }
-  h3{font-size:1.18rem;margin:26px 0 10px;color:var(--secondary-color)}
-  p,ul,ol{margin:10px 0 14px;font-size:1rem;color:#D9DEEF}
-  p.lead{color:#C8D2F0}
-  a{color:var(--primary-color);text-decoration:none}
-  a:hover{text-decoration:underline;color:var(--secondary-color)}
-  .badge{
-    display:inline-block;padding:6px 10px;border-radius:8px;margin:6px 8px 0 0;
-    background:rgba(121,225,255,.10);border:1px solid rgba(121,225,255,.25);color:#e6f9ff;font-size:.86rem
-  }
-  .cta-button{
-    display:inline-block;margin-top:18px;
-    background:linear-gradient(45deg,var(--primary-color),var(--secondary-color));
-    color:#0A0E18;padding:12px 28px;border-radius:40px;font-weight:600;
-    box-shadow:0 10px 30px rgba(178,124,255,.22);
-    transition:transform .2s ease, box-shadow .2s ease;
-  }
-  .cta-button:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(121,225,255,.28)}
-  ul{list-style:none;padding-left:0}
-  ul li{position:relative;padding-left:28px;margin:10px 0}
-  ul li::before{
-    content:"\f058";font-family:"Font Awesome 6 Free";font-weight:900;
-    position:absolute;left:0;top:2px;color:var(--secondary-color);font-size:1.05rem
-  }
-  .grid{display:grid;gap:16px}
-  @media(min-width:860px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:repeat(3,1fr)}}
+  </script>
 
-  .kv{
-    display:grid;grid-template-columns:200px 1fr;gap:10px 16px;padding:16px;border:1px solid rgba(255,255,255,.08);
-    border-radius:12px;background:rgba(255,255,255,.02)
-  }
-  .kv span.key{color:#9fb0d9}
-  .kv span.val{color:#eaf1ff}
+  <!-- Local CSS (no external network fetches) -->
+  <style>
+    /* =========================
+       Aster DEX Theme (Cosmic)
+       ========================= */
+    :root{
+      --primary-color:#2A2E6A;      /* deep indigo for headings */
+      --secondary-color:#5D63D1;    /* violet accent */
+      --accent:#17C3FF;             /* electric cyan */
+      --accent-2:#7C4DFF;           /* neon purple */
+      --ink:#1E2340;                /* body ink */
+      --muted:#6D7399;              /* secondary text */
+      --bg:#0B0D1A;                 /* page bg dark space */
+      --panel:#121530;              /* card bg */
+      --panel-2:#161A3A;            /* alt card */
+      --border:rgba(124,77,255,.22);
+      --border-2:rgba(23,195,255,.22);
+      --glow:0 0 28px rgba(124,77,255,.25), 0 0 18px rgba(23,195,255,.18);
+      --shadow-1:0 10px 26px rgba(0,0,0,.28);
+      --shadow-2:0 16px 40px rgba(0,0,0,.36);
+      --ok:#1EE6A5; --warn:#F6A500; --err:#FF4D6D;
+    }
 
-  .table{width:100%;border-collapse:collapse;border:1px solid rgba(255,255,255,.08);margin:12px 0;border-radius:10px;overflow:hidden}
-  .table th,.table td{padding:12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
-  .table th{background:#121b34;color:#cfe7ff}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background: radial-gradient(900px 420px at 10% -220px, rgba(124,77,255,.18), transparent 70%), var(--bg);
+      color:#E9ECFF;
+      line-height:1.75;
+      letter-spacing:.1px;
+    }
 
-  .faq-item{background:var(--bg-light);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:12px 0;overflow:hidden}
-  .faq-question{padding:16px 18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
-  .faq-question::after{content:'+';color:var(--primary-color);font-size:1.6rem;transition:transform .2s ease}
-  .faq-question.active::after{content:'–';transform:rotate(180deg)}
-  .faq-answer{max-height:0;overflow:hidden;padding:0 18px;background:var(--bg-dark);transition:max-height .35s ease,padding .35s ease}
-  .faq-answer p,.faq-answer ul{padding:10px 0 16px;margin:0}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
 
-  footer{text-align:center;padding:44px 18px;margin-top:auto;color:#AAB6D7}
-  .social-links a{color:#DDE6FF;margin:0 12px;font-size:1.35rem}
-  .social-links a:hover{color:var(--primary-color)}
-  .note{font-size:.95rem;color:#B8C3E3}
-  .muted{color:#9fb0d9}
-  .callout{
-    border-left:3px solid var(--secondary-color);
-    background:linear-gradient(90deg, rgba(178,124,255,.08), transparent 60%);
-    padding:14px 16px;border-radius:8px;margin:16px 0
-  }
-</style>
+    .container{max-width:1040px;margin:0 auto;padding:0 20px}
+
+    header.hero{
+      padding:90px 0 70px;
+      border-bottom:1px solid var(--border);
+      background:
+        radial-gradient(900px 420px at 80% -260px, rgba(23,195,255,.15), transparent 70%),
+        linear-gradient(180deg, rgba(14,18,42,.0) 0%, rgba(14,18,42,.35) 100%);
+      box-shadow:var(--shadow-1);
+    }
+    h1{
+      font-size:clamp(2.2rem,4.5vw,3.4rem);
+      margin:0 0 10px;
+      font-weight:900;
+      background:linear-gradient(45deg, var(--accent), var(--accent-2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:var(--glow);
+    }
+    .tagline{
+      color:#C7CBFF;
+      max-width:860px;
+      font-size:1.1rem;
+    }
+
+    /* Sections */
+    section{
+      margin:36px 0 42px;
+      background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:36px 22px;
+      box-shadow:var(--shadow-1);
+      transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    section:hover{transform:translateY(-3px);box-shadow:var(--shadow-2);border-color:var(--border-2)}
+    h2{
+      margin:0 0 22px;
+      text-align:center;
+      color:#FFFFFF;
+      font-weight:900;
+      font-size:clamp(1.6rem,3vw,2.1rem);
+      letter-spacing:.2px;
+      text-shadow:var(--glow);
+    }
+    h3{
+      color:#D7DAFF;
+      font-weight:800;
+      font-size:1.16rem;
+      margin:22px 0 10px;
+    }
+    p,ul,ol{color:#D2D6FF}
+    .muted{color:var(--muted)}
+
+    /* Lists with check icons (CSS only) */
+    ul{list-style:none;padding-left:0}
+    ul li{position:relative;padding-left:28px;margin-bottom:10px}
+    ul li:before{
+      content:"";
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(45deg, var(--accent), var(--accent-2));
+      position:absolute;left:6px;top:10px;
+      box-shadow:0 0 12px rgba(23,195,255,.45);
+    }
+
+    /* Badges & CTA */
+    .badges{margin-top:16px}
+    .badge{
+      display:inline-block;border:1px solid var(--border-2);
+      background:rgba(23,195,255,.08);
+      color:#BFEAFF;font-weight:800;font-size:.84rem;
+      padding:6px 10px;border-radius:12px;margin:6px 8px 0 0;
+      backdrop-filter:blur(2px)
+    }
+    .cta-wrap{margin-top:24px}
+    .cta{
+      display:inline-block;
+      background:linear-gradient(45deg, var(--accent), var(--accent-2));
+      color:#03121B;font-weight:900;border-radius:999px;
+      padding:12px 26px;box-shadow:0 14px 34px rgba(23,195,255,.24);
+      transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; text-decoration:none;
+    }
+    .cta:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(124,77,255,.28);filter:saturate(110%)}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:14px 0;border-radius:12px;overflow:hidden}
+    th,td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+    th{background:#191D44;color:#E9ECFF;text-align:left}
+    tr{background:#121535}
+    tr.highlight-row{background:#161B45}
+    tr:hover{background:#1A1F52}
+
+    /* Callout */
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(23,195,255,.08);
+      padding:12px 14px;border-radius:12px;margin-top:12px
+    }
+
+    /* FAQ accordion */
+    .faq-item{background:#121535;border:1px solid var(--border);border-radius:12px;margin:10px 0;overflow:hidden}
+    .faq-q{padding:16px 18px;font-weight:900;font-size:1.02rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .faq-q:hover{background:rgba(124,77,255,.10)}
+    .faq-q::after{content:'+';font-size:1.5rem;color:var(--accent);transition:transform .25s ease}
+    .faq-q.active::after{content:'–';transform:rotate(180deg)}
+    .faq-a{max-height:0;overflow:hidden;padding:0 18px;background:#0F1333;border-top:1px dashed var(--border);transition:max-height .35s ease,padding .35s ease}
+    .faq-a p,.faq-a ul{padding:10px 0 16px;margin:0}
+
+    footer{text-align:center;padding:40px 20px;margin:50px 0 10px;color:#AAB0E0;border-top:1px solid var(--border)}
+    .social a{color:#B8BEFF;margin:0 10px}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
+
+    /* Responsiveness */
+    @media (max-width: 768px){
+      .tagline{font-size:1rem}
+      section{padding:26px 16px}
+    }
+  </style>
 </head>
 <body>
-
   <!-- HERO -->
-  <div class="header-bg">
+  <header class="hero" aria-label="Hero section">
     <div class="container">
-      <h1>Aster DEX — Efficient Liquidity & Pro Execution for EVM Traders</h1>
+      <h1>Aster DEX — Liquidity, Routing & Effective Price</h1>
       <p class="tagline">
-        Aster DEX is a non-custodial AMM-first exchange designed for low-friction swaps, robust liquidity provisioning,
-        and transparent execution. This guide distills how routing works, how to manage slippage and gas, how LPs can think
-        about fee income vs. risk, and which practices materially improve your realized price and safety.
+        <strong>Aster DEX</strong> delivers efficient swaps with MEV-aware routing, clear fee math, and auditable settlement.  
+        In this guide we map the <strong>Aster DEX Platform</strong> architecture, walk through <strong>Aster DEX Trading</strong> workflows,
+        discuss LP risks (IL), slippage, limit/DCA, safe bridging context, and execution KPIs for power users.
       </p>
-      <div class="badges">
-        <span class="badge">Stable & Volatile Pools</span>
-        <span class="badge">Gas-Aware Routing</span>
-        <span class="badge">LP Risk Modeling</span>
-        <span class="badge">Limit / DCA (if enabled)</span>
-        <span class="badge">MEV-Aware Practices</span>
-        <span class="badge">Open Analytics Hooks</span>
+      <div class="badges" aria-label="Feature badges">
+        <span class="badge">Aster DEX</span>
+        <span class="badge">AsterDEX</span>
+        <span class="badge">Aster DEX Trading</span>
+        <span class="badge">Aster DEX Platform</span>
+        <span class="badge">Smart Order Routing</span>
+        <span class="badge">MEV-Aware</span>
       </div>
-      <div>
-        <a class="cta-button" href="#" target="_blank" rel="noopener">Open Aster DEX →</a>
+      <div class="cta-wrap">
+        <a class="cta" href="#" target="_blank" rel="noopener" aria-label="Open Aster DEX app (placeholder)">Open Aster DEX App →</a>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="container">
+  <main class="container" id="main">
     <!-- OVERVIEW -->
-    <section id="protocol-overview">
-      <h2>Aster DEX Overview: AMM Mechanics, Routing & Pricing</h2>
-      <p class="lead">
-        Aster DEX focuses on two liquidity archetypes: <em>volatile</em> pools for non-correlated assets (classic x·y=k),
-        and <em>stable</em> pools for correlated pairs (curve-like invariant near parity). The router evaluates single-hop,
-        multi-hop, and—where supported—split-route paths to maximize <strong>expected output net of gas and fees</strong>.
+    <section id="overview">
+      <h2>Aster DEX Overview — Architecture & Execution on the Aster DEX Platform</h2>
+      <p>
+        The <strong>Aster DEX Platform</strong> is a non-custodial AMM + router stack. The planner evaluates single-hop,
+        multi-hop, and split routes across stable and volatile pools, optionally comparing RFQ makers when integrated.
+        Settlement is on-chain; approvals are minimized and guarded with strong <em>min-received</em> checks.
       </p>
 
-      <div class="grid cols-2">
-        <div>
-          <h3>Pool Design & Price Behavior</h3>
-          <ul>
-            <li><strong>Volatile pools:</strong> General pairs (e.g., WETH/ALT). Slippage declines with depth; fee tier selection matters.</li>
-            <li><strong>Stable pools:</strong> For pegs and highly correlated assets (e.g., USDC/USDT). Tighter curve around 1:1 reduces price impact.</li>
-            <li><strong>Fee tiers:</strong> Lower tiers help majors; higher tiers compensate LPs where volatility/liquidity is thin.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Routing Priorities (What the Router Optimizes)</h3>
-          <ul>
-            <li><strong>Effective price:</strong> Quoted output minus gas. Extra hops only if they beat the simpler path on net.</li>
-            <li><strong>Path quality:</strong> Avoid dust pools; favor deeper lanes and stable legs for stable pairs.</li>
-            <li><strong>Reliability:</strong> Tight—but realistic—slippage to reduce reverts without inviting MEV griefing.</li>
-          </ul>
-        </div>
-      </div>
+      <h3>Core Components of AsterDEX</h3>
+      <ul>
+        <li><strong>Route Planner (AsterDEX):</strong> Scores paths by impact, gas, and realized output; penalizes gas-heavy detours.</li>
+        <li><strong>Pool Engines:</strong> <em>Stable</em> curve for correlated assets; <em>constant-product</em> for non-correlated pairs.</li>
+        <li><strong>Execution Kernel:</strong> Bundles approvals + swaps, enforces min-out, emits detailed events for analytics.</li>
+        <li><strong>Risk Controls:</strong> Token allowlists, spender verification, minimal-allowance policy, and re-quote guards.</li>
+      </ul>
 
-      <div class="callout">
-        <strong>Execution Tip:</strong> On small tickets, prefer fewer hops; on larger size, check whether a stable-leg detour
-        or a split route yields a better <em>effective</em> price after gas.
-      </div>
+      <h3>Best Execution in Aster DEX Trading</h3>
+      <ul>
+        <li><strong>Effective price (net):</strong> Include pool fee tiers, partner fees, L2 gas/L1 data costs, and price impact.</li>
+        <li><strong>Depth-first routing:</strong> Stable pivots reduce slippage for size; split routes smooth fills.</li>
+        <li><strong>Fill reliability:</strong> Prefer firm liquidity; auto-refresh quotes in choppy markets.</li>
+      </ul>
 
-      <div class="kv" style="margin-top:10px">
-        <span class="key">Settlement</span><span class="val">On-chain; assets go directly to your wallet (non-custodial)</span>
-        <span class="key">Gas Token</span><span class="val">Native token of the target chain (e.g., ETH/ARB/MATIC/BNB)</span>
-        <span class="key">Slippage Control</span><span class="val">User-defined min-out; tx reverts if route drifts beyond tolerance</span>
-        <span class="key">Token Safety</span><span class="val">Verify contract addresses via reputable explorers before swapping</span>
+      <div class="callout" role="note">
+        <strong>Tip:</strong> For large orders on <strong>Aster DEX</strong>, simulate a micro-swap first, then slice by tranches.
       </div>
     </section>
 
     <!-- SECURITY -->
     <section id="security">
-      <h2>Security Posture & User-Side Protections</h2>
+      <h2>Security & Operational Safety on Aster DEX</h2>
       <p>
-        Aster DEX is non-custodial, but approval and routing choices still influence risk. Treat every swap as production:
-        validate token contracts, minimize allowances, and keep a clean operational trail (hashes, timestamps, screenshots).
+        <strong>Aster DEX</strong> settles directly to your wallet. Treat execution like production deployment: verify contracts,
+        keep approvals tight, and sanity-check the route preview before signing.
       </p>
 
-      <div class="grid cols-2">
-        <div>
-          <h3>Wallet & Approval Hygiene</h3>
-          <ul>
-            <li>Prefer a hardware wallet for material balances; verify prompts on-device.</li>
-            <li>Approve the minimum or tight caps instead of unlimited allowances.</li>
-            <li>Revoke stale approvals monthly via explorer or allowance managers.</li>
-            <li>Bookmark the official app/docs; avoid DM links and sponsored search results.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>MEV-Aware Flow</h3>
-          <ul>
-            <li>Use tight but realistic slippage; widen slightly during volatile periods to avoid churn.</li>
-            <li>Consider private/builder RPC where available to reduce sandwich exposure.</li>
-            <li>For large orders, split across time or pools to flatten footprint.</li>
-            <li>Prefer stable pools for stable pairs to avoid unnecessary curve exposure.</li>
-          </ul>
-        </div>
-      </div>
-
-      <h3>Threat Model: Practical Failure Modes</h3>
+      <h3>Wallet & Allowance Hygiene — Aster DEX Platform</h3>
       <ul>
-        <li><strong>Impostor tokens / wrong address:</strong> Always match token contracts from official sources.</li>
-        <li><strong>Approval abuse:</strong> Unlimited allowances to unknown routers/contracts create long-lived risk.</li>
-        <li><strong>Route drift:</strong> Quotes can stale under volatility; tx reverts if min-out is not met—refresh and retry.</li>
+        <li>Use a hardware wallet for meaningful balances; confirm spender and amount on-device.</li>
+        <li>Approve only the <em>minimum</em> required; revoke stale allowances regularly.</li>
+        <li>Bookmark official <strong>Aster DEX Platform</strong> links; avoid search-ad impostors and unsolicited “support” DMs.</li>
       </ul>
-      <p class="note">The cheapest trade is the one you don’t have to resubmit. Start with a micro-swap to validate behavior.</p>
+
+      <h3>Threat Model & MEV Mitigations in Aster DEX Trading</h3>
+      <ul>
+        <li><strong>Sandwich/front-run:</strong> realistic slippage, private/builder RPC, chunk orders, priority tip during spikes.</li>
+        <li><strong>Impostor tokens:</strong> verify addresses/decimals; never trust tickers or icons alone.</li>
+        <li><strong>Non-standard tokens:</strong> fee-on-transfer impacts min-out; validate behavior with a micro-swap.</li>
+      </ul>
     </section>
 
-    <!-- FUNCTIONS -->
-    <section id="functions">
-      <h2>Power Features for Traders & Integrators</h2>
+    <!-- FEATURES -->
+    <section id="features">
+      <h2>Key Features — Aster DEX Trading on the Aster DEX Platform</h2>
 
-      <h3>Smart Order Routing</h3>
+      <h3>Smart Order Routing (AsterDEX)</h3>
       <p>
-        The router evaluates direct and intermediate paths (e.g., TOKEN→WETH→STABLE), optionally mixing stable/volatile legs.
-        It scores candidates by <strong>net output</strong> after AMM fees and gas, not just headline quotes.
+        The router compares direct A→B, hub pivots (e.g., A→WETH→B), and split routes by <em>realized output</em> after gas and fees.  
+        Stable/volatile legs can be combined for better net results.
       </p>
 
-      <h3>Limit Orders & DCA (if enabled in your UI)</h3>
+      <h3>Limit Orders & DCA (Aster DEX Trading)</h3>
       <ul>
-        <li><strong>Limit orders:</strong> Target a price; fills may be partial or expire during high volatility.</li>
-        <li><strong>DCA:</strong> Automate recurring buys/sells; keep the wallet funded with gas for each leg.</li>
+        <li><strong>Limit:</strong> Executes at or better than target; partials and expiries possible in volatility.</li>
+        <li><strong>DCA:</strong> Stagger entries/exits to reduce timing risk; ensure gas balance across legs.</li>
       </ul>
 
-      <h3>LP & Farming (Liquidity Provider Lens)</h3>
+      <h3>LP Risks & IL — For Liquidity Providers on Aster DEX</h3>
       <ul>
-        <li><strong>Fee income:</strong> Earn swap fees proportional to share; stable pools often see high volume with tighter spreads.</li>
-        <li><strong>Impermanent loss:</strong> Volatile pools carry IL risk. Model scenarios; fees must outpace divergence to outperform HODL.</li>
-        <li><strong>Pool selection:</strong> Favor durable demand, sensible fee tier, and sustained volume; avoid fragmented markets.</li>
+        <li><strong>Impermanent Loss (IL):</strong> Larger with volatile pairs; stable pools mitigate IL but cap upside.</li>
+        <li><strong>Fee capture vs IL:</strong> Track fee APR vs IL estimates; rebalance when fees no longer offset drift.</li>
+        <li><strong>Diversification:</strong> Mix stable and volatile exposure; avoid thin pools for large positions.</li>
       </ul>
 
-      <h3>Developer Notes</h3>
-      <ul>
-        <li>Deterministic calldata and explicit revert reasons for min-out/allowance checks.</li>
-        <li>Event logs expose route, hops, realized output, and gas—ideal for analytics/BI pipelines.</li>
-        <li>Stable-pool math differs near parity; test small-delta trades for rounding behavior.</li>
-      </ul>
-
-      <h3>Execution Quality Metrics</h3>
-      <table class="table">
-        <thead><tr><th>Metric</th><th>Why It Matters</th><th>How to Use</th></tr></thead>
+      <h3>KPI Metrics — Measuring Aster DEX Platform Performance</h3>
+      <table aria-label="Execution KPIs">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Target / Heuristic</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td>Quoted vs. Realized Output</td><td>Measures slippage + latency effects</td><td>Investigate if Δ grows during busy blocks</td></tr>
-          <tr><td>Effective Price</td><td>Net of gas + AMM fees</td><td>Compare routes by effective price, not raw output</td></tr>
-          <tr><td>Fail/Revert Rate</td><td>Friction & wasted gas</td><td>Adjust slippage and RPC; prefer simpler paths</td></tr>
-          <tr><td>Pool Health</td><td>Depth & recent volume</td><td>Choose fee tiers/pools aligned with demand</td></tr>
+          <tr class="highlight-row">
+            <td>Quoted ↔ Realized Output</td>
+            <td>Δ ≤ 0.30–0.80%</td>
+            <td>Flags congestion, stale quotes, or thin depth.</td>
+          </tr>
+          <tr>
+            <td>Effective Price</td>
+            <td>≤ Quote × (1+0.30%)</td>
+            <td>Includes gas + pool/partner fees + impact.</td>
+          </tr>
+          <tr>
+            <td>Fail/Revert Rate</td>
+            <td>&lt; 1%</td>
+            <td>Retune slippage, size, or RPC if higher.</td>
+          </tr>
+          <tr>
+            <td>Pool Depth & 24h/7d Volume</td>
+            <td>Higher is better</td>
+            <td>Proxy for expected slippage and fill quality.</td>
+          </tr>
         </tbody>
       </table>
     </section>
 
     <!-- RUNBOOK -->
     <section id="runbook">
-      <h2>Practical Runbook: Getting Best Fills on Aster DEX</h2>
+      <h2>Runbook — Consistent Results on Aster DEX</h2>
 
-      <div class="grid cols-3">
-        <div>
-          <h3>Before You Trade</h3>
-          <ul>
-            <li>Keep native gas (ETH/ARB/MATIC/BNB) for approvals + swap + possible retry.</li>
-            <li>Verify token address, decimals, and any transfer-fee flags.</li>
-            <li>Dry-run with a micro-swap to validate route and min-out behavior.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Slippage & Gas</h3>
-          <ul>
-            <li>Majors / stable pairs: 0.1–0.5% slippage; long-tail tokens: wider based on depth.</li>
-            <li>Raise priority fee during volatile windows to reduce mempool time.</li>
-            <li>Prefer fewer hops for small tickets; evaluate stable legs for stables.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>For Large Size</h3>
-          <ul>
-            <li>Split across time or pools to flatten impact and reduce MEV surface.</li>
-            <li>Compare net output (after gas) for direct vs. multi-hop routes.</li>
-            <li>Monitor pool health (depth, volume, fee tier alignment) before committing size.</li>
-          </ul>
-        </div>
-      </div>
-
-      <h3>Troubleshooting Matrix</h3>
+      <h3>Before You Trade on Aster DEX Platform</h3>
       <ul>
-        <li><strong>INSUFFICIENT_OUTPUT_AMOUNT</strong> → Price moved or slippage too tight. Refresh quotes; nudge tolerance; consider chunking.</li>
-        <li><strong>TRANSFER_FROM_FAILED</strong> → Missing approval or non-standard token. Re-approve minimal amount; confirm transfer behavior.</li>
-        <li><strong>Pending too long</strong> → RPC congestion or low tip. Speed up with a higher priority fee or switch RPC.</li>
-        <li><strong>Unexpected output</strong> → Verify token contract and pool; inspect hops in the route preview.</li>
+        <li>Keep native gas tokens for approvals and swap execution.</li>
+        <li>Verify token addresses/decimals; beware non-standard transfer logic.</li>
+        <li>Start with a micro-swap; confirm min-out behavior, then scale.</li>
+      </ul>
+
+      <h3>Slippage & Gas Guidance — AsterDEX</h3>
+      <ul>
+        <li><strong>Deep stables/majors:</strong> 0.10–0.50%.</li>
+        <li><strong>Mid-caps/moderate depth:</strong> 0.50–1.50% depending on liquidity/volatility.</li>
+        <li><strong>Illiquid assets:</strong> 1.50%+; split orders or pivot via deeper pairs.</li>
+      </ul>
+
+      <h3>Bridging Context for Aster DEX Trading</h3>
+      <ul>
+        <li>Use canonical bridges or reputable fast-bridge providers; verify official links.</li>
+        <li>Bridge a test amount first; ensure destination gas for post-bridge approvals.</li>
+        <li>Expect withdrawal windows on some routes; avoid duplicate submissions.</li>
+      </ul>
+
+      <h3>Troubleshooting — Aster DEX Platform</h3>
+      <ul>
+        <li class="warn"><strong>Pending too long:</strong> bump priority tip or switch RPC; wait for off-peak windows.</li>
+        <li class="err"><strong>INSUFFICIENT_OUTPUT_AMOUNT:</strong> refresh quotes, widen slippage modestly, or split size.</li>
+        <li><strong>Allowance/approval errors:</strong> re-approve the minimum; confirm spender address from official UI.</li>
       </ul>
 
       <div class="callout">
-        <strong>Operator KPI:</strong> Track <em>effective price</em>, <em>revert rate</em>, and <em>time-to-finality</em>.
-        These three numbers explain most execution variance and point to concrete fixes (slippage, RPC, route choice).
+        <strong>Checklist (Aster DEX):</strong> Official link ✅ · Token address ✅ · Slippage sane ✅ · Min-received set ✅ · Gas checked ✅
       </div>
     </section>
 
     <!-- FAQ -->
-    <section id="faq">
-      <h2>Frequently Asked Questions</h2>
+    <section id="faq" aria-label="FAQ">
+      <h2>Frequently Asked Questions — Aster DEX</h2>
 
       <div class="faq-item">
-        <div class="faq-question">How is Aster DEX different from multi-DEX aggregators?</div>
-        <div class="faq-answer">
-          <p>
-            Aggregators scan many venues and sometimes split order flow. Aster DEX focuses on <em>its own</em> stable/volatile pools
-            and gas-aware routing inside a single venue. For pairs with strong native depth, this often yields competitive realized prices
-            with simpler, cheaper transactions.
-          </p>
-        </div>
+        <div class="faq-q">How is Aster DEX different from other AMMs?</div>
+        <div class="faq-a"><p><strong>Aster DEX</strong> combines stable + volatile pools with a route planner that optimizes for realized output after gas and fees, not just headline quotes.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Which chains and tokens are supported?</div>
-        <div class="faq-answer">
-          <p>
-            Aster DEX targets major EVM networks. Concrete availability depends on deployments and listings on each chain.
-            Always verify token contracts on the relevant explorer before swapping or providing liquidity.
-          </p>
-        </div>
+        <div class="faq-q">What is included in the “effective price” on the Aster DEX Platform?</div>
+        <div class="faq-a"><p>Pool fee tiers, any interface/partner fees, price impact, and execution gas (including L1 data where relevant).</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">How should I set slippage?</div>
-        <div class="faq-answer">
+        <div class="faq-q">Does AsterDEX protect against MEV?</div>
+        <div class="faq-a">
           <ul>
-            <li>Stable pairs: 0.1–0.3% typical (liquidity-dependent).</li>
-            <li>Liquid majors: 0.2–0.5% in normal conditions.</li>
-            <li>Long-tail: start conservative; widen if depth is thin or volatility is high.</li>
+            <li>Use realistic slippage and consider private/builder RPC endpoints.</li>
+            <li>Split large orders and increase priority tip during busy periods.</li>
+            <li>Prefer deeper pools or stable pivots to compress impact.</li>
           </ul>
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">How do I reduce MEV/sandwich risk?</div>
-        <div class="faq-answer">
-          <ul>
-            <li>Tight but realistic slippage leaves less extractable value.</li>
-            <li>Consider private/builder RPC where supported for meaningful size.</li>
-            <li>Split large orders and increase priority fee to reduce time in mempool.</li>
-          </ul>
-        </div>
+        <div class="faq-q">What are good practices for Aster DEX Trading with non-standard tokens?</div>
+        <div class="faq-a"><p>Start with a micro-swap, set conservative min-out, and confirm fee-on-transfer behavior to avoid unexpected reverts.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Can I provide liquidity and what should I watch?</div>
-        <div class="faq-answer">
-          <p>
-            Yes. Focus on pools with persistent flow and appropriate fee tiers. Model impermanent loss on volatile pairs,
-            and evaluate whether expected fee income compensates for price divergence risk. Stable pools are typically better
-            for correlated assets with lower IL.
-          </p>
-        </div>
+        <div class="faq-q">How do LPs manage impermanent loss on Aster DEX?</div>
+        <div class="faq-a"><p>Diversify across stable/volatile pools, monitor fee APR vs IL drift, and rebalance when fees no longer offset expected IL.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">My swap failed — what now?</div>
-        <div class="faq-answer">
-          <ul>
-            <li>Re-quote; markets may have moved beyond your tolerance.</li>
-            <li>Increase priority fee or switch RPC if it’s pending for too long.</li>
-            <li>Verify allowances and token contracts; re-approve the minimum if needed.</li>
-          </ul>
-        </div>
+        <div class="faq-q">Is Aster DEX audited?</div>
+        <div class="faq-a"><p>Consult official documentation for current audit status. Regardless, verify contracts and follow the runbook outlined here.</p></div>
       </div>
     </section>
+  </main>
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="social-links" aria-label="Aster DEX links">
-        <a href="#" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
-        <a href="#" target="_blank" rel="noopener" aria-label="Docs"><i class="fas fa-book"></i></a>
-        <a href="#" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
-      </div>
-      <p class="muted">Trade carefully. Verify token contracts, track your effective price, and keep allowances minimal.</p>
-    </footer>
-  </div>
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="social">
+      <a href="#" target="_blank" aria-label="Twitter">Twitter</a> ·
+      <a href="#" target="_blank" aria-label="Docs">Docs</a> ·
+      <a href="#" target="_blank" aria-label="GitHub">GitHub</a>
+    </div>
+    <p class="muted" style="margin-top:10px">
+      Built for <strong>Aster DEX</strong> — covering <strong>AsterDEX</strong>, <strong>Aster DEX Trading</strong>, and the <strong>Aster DEX Platform</strong>.  
+      Cosmic indigo theme focused on safety, execution quality, and clarity.
+    </p>
+  </footer>
 
+  <!-- Minimal, accessible-ish accordion -->
   <script>
-    // FAQ toggles
-    document.querySelectorAll('.faq-question').forEach(q=>{
+    document.querySelectorAll('.faq-q').forEach(q=>{
       q.addEventListener('click',()=>{
         q.classList.toggle('active');
         const a=q.nextElementSibling;
-        if(a.style.maxHeight){a.style.maxHeight=null;a.style.paddingTop="0px";a.style.paddingBottom="0px";}
-        else{a.style.maxHeight=a.scrollHeight+"px";a.style.paddingTop="10px";a.style.paddingBottom="16px";}
+        if(a.style.maxHeight){
+          a.style.maxHeight=null;
+          a.style.paddingTop="0px";
+          a.style.paddingBottom="0px";
+        }else{
+          a.style.maxHeight=a.scrollHeight+"px";
+          a.style.paddingTop="10px";
+          a.style.paddingBottom="16px";
+        }
       });
     });
   </script>
